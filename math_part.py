@@ -141,17 +141,15 @@ class mathpart(Ui_MainWindow):
 
         # syst = np.zeros((n+1, n+1))
         # syst[0][0] = 1
-        C = np.zeros(n+1)
+        C = np.zeros(n)
         A = np.zeros(n)
         B = np.zeros(n)
-        C[0] = 1
         for i in range(0, n):
             xi = (i+1)*h
             xi1 = (i+2)*h
             A[i] = a_func(xi)/h**2
-            C[i+1] = -(a_func(xi)/(h**2)+d_func(xi)+a_func(xi1)/(h**2))
+            C[i] = -(a_func(xi)/(h**2)+d_func(xi)+a_func(xi1)/(h**2))
             B[i] = a_func(xi1)/h**2
-        C[n] = 0
         # syst[n][n] = 0
 
         # v = np.linalg.solve(syst, d)
