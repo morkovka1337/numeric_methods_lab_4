@@ -18,10 +18,6 @@ class mathpart(Ui_MainWindow):
 
     def build_test_1(self, n):
 
-        def phi(self, i):
-            nonlocal h
-            return (h**2)*(12*(i**2)+1)/3 + 10*i*h + 6
-
 
         def acc_sol(x):
             return 2*x**2 + 5*x + 7
@@ -119,15 +115,15 @@ class mathpart(Ui_MainWindow):
             elif x-h/2 >= ksi:
                 return np.sqrt(2)/2
         def acc_sol(x):
-            # [-0.15717387  0.59707472  0.00681621 -0.8470241 ]
-            c1 = -0.15717387
-            c2 = 0.59707472
-            c3 = 0.00681621
-            c4 = -0.8470241
+            # [-0.419653    0.85955385  0.06744931 -1.58156196]
+            c1 = -0.419653
+            c2 = 0.85955385
+            c3 = 0.06744931
+            c4 = -1.58156196
             if x < ksi:
-                return c1*np.exp((np.sqrt(np.pi*4+1)) * x) + c2*np.exp(-((np.sqrt(np.pi*4+1)) * x)) + 1/(np.pi/4+1) 
+                return c1*np.exp((np.sqrt(np.pi*4+1)) * x) + c2*np.exp(-((np.sqrt(np.pi*4+1)) * x)) + 4/(np.pi+4) 
             else:
-                return c3*np.exp(np.pi/2*x) + c4*np.exp(-np.pi/2*x) + np.sqrt(2) / np.pi**2
+                return c3*np.exp(np.pi/4*x) + c4*np.exp(-np.pi/4*x) + 4*np.sqrt(2)/np.pi**2
 
         h = 1/n
         v = np.zeros(n+1)
@@ -159,22 +155,22 @@ class mathpart(Ui_MainWindow):
         b = [0, 0, 0, 0]
         syst[0][0] = 1
         syst[0][1] = 1
-        b[0] = 1-1/(pi/4+1)
+        b[0] = 1-4/(pi+4)
 
-        syst[1][2] = exp(pi/2)
-        syst[1][3] = exp(-pi/2)
-        b[1] = -sqrt(2)/(pi**2)
+        syst[1][2] = exp(pi/4)
+        syst[1][3] = exp(-pi/4)
+        b[1] = -4*sqrt(2)/(pi**2)
 
         syst[2][0] = exp(sqrt(pi/4 + 1)*(pi/4))
         syst[2][1] = exp(-sqrt(pi/4 + 1)*(pi/4)) 
-        syst[2][2] = -exp((pi**2)/8)
-        syst[2][3] = -exp(-(pi**2)/8)
-        b[2] = 4*sqrt(2)/(pi**2) - 1/(ksi+1)  
+        syst[2][2] = -exp((pi**2)/16)
+        syst[2][3] = -exp(-(pi**2)/16)
+        b[2] = 4*sqrt(2)/(pi**2) - 4/(pi+4)  
 
         syst[3][0] = sqrt(pi/4 + 1)*exp(sqrt(pi/4 + 1)*(pi/4))
-        syst[3][0] = -exp(-sqrt(pi/4 + 1)*(pi/4))*sqrt(pi/4 + 1)
-        syst[3][2] = -exp((pi**2)/8)*pi
-        syst[2][2] = exp(-(pi**2)/8)*pi
+        syst[3][0] = -sqrt(pi/4 + 1) * exp(-sqrt(pi/4 + 1)*(pi/4))
+        syst[3][2] = -exp((pi**2)/16)*pi/2
+        syst[2][2] = exp(-(pi**2)/16)*pi/2
 
         
 
