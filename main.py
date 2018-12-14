@@ -20,11 +20,13 @@ class MyWin(QMainWindow, Ui_MainWindow):
         self.pushButton.clicked.connect(self.MyFunction)
     def MyFunction(self):
         n = int(self.textEdit.toPlainText())
-        if self.comboBox.currentText() == "Тестовая и основная 1":
+        if self.comboBox.currentText() == "Тестовая задача 1":
             math_part.mathpart.build_test_1(self, n)
-        elif self.comboBox.currentText() == "Тестовая и основная 2":
+        elif self.comboBox.currentText() == "Тестовая задача 2":
             math_part.mathpart.build_test_2(self, n)
-
+        elif self.comboBox.currentText() == "Основная задача":
+            math_part.mathpart.build_test_3(self, n)
+            
 if __name__=="__main__":
     app = QtWidgets.QApplication(sys.argv)
     myapp = MyWin()
