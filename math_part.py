@@ -1,8 +1,6 @@
 import math
-import pylab
 import numpy as np
 from numpy import float64
-from matplotlib import mlab
 from matplotlib.figure import Figure
 from Form_for_4_lab import Ui_MainWindow
 from PyQt5.QtWidgets import QApplication, QMainWindow
@@ -74,7 +72,6 @@ class mathpart(Ui_MainWindow):
             alpha = np.zeros(n)
             beta = np.zeros(n)
             x = np.zeros(n+1)
-            #x[0] = d[0] #x[0] = kapa1*x[1] + mu1, mu1 = d[0]
             alpha[0] = 0 # alpha[0] = kapa1, kapa1 в этой задаче всегда 0
             beta[0] = d[0] # beta[0] = mu[1]
             for i in range(0, n-1):
@@ -85,8 +82,9 @@ class mathpart(Ui_MainWindow):
                 # beta.append((d[i] + beta[i-1]*a[i-1])/c[i-1]-alpha[i-1]*a[i-1])
 
             x[-1] = d[-1]
-            for i in range (n-1,  -1, -1):
+            for i in range (n-1, 0, -1):
                 x[i] = alpha[i] * x[i+1] + beta[i]
+            x[0] = alpha[0] * x[1] + beta[0]
             return x
 
         def a_func(x):
@@ -115,77 +113,84 @@ class mathpart(Ui_MainWindow):
             elif x-h/2 >= ksi:
                 return np.sqrt(2)/2
         def acc_sol(x):
-            # [-0.419653    0.85955385  0.06744931 -1.58156196]
-            c1 = -0.419653
-            c2 = 0.85955385
-            c3 = 0.06744931
-            c4 = -1.58156196
+            # M:{{c1->0.109153,c2->-1.23346,c3->0.157939,c4->-1.19147}}
+            c1 = -0.231048  # -0.231048
+            c2 = 0.670949 # 0.670949
+            c3 = -0.323565 # -0.323565
+            c4 = 0.299401  # 0.299401
+            # if x < ksi:
+            #     return c1*math.exp((np.sqrt(np.pi*4+1)) * x) + c2*math.exp(-((np.sqrt(np.pi*4+1)) * x)) + 1/(np.pi/4+1) 
+            # else:
+            #     return c3*math.exp(np.pi * x /4) + c4*math.exp(-np.pi * x /4) + 4*np.sqrt(2)/(np.pi**2)
+            # if x < 0.125:
+            #     return c1*np.exp(np.sqrt(1.125/np.exp(-0.125))*x) + c2*np.exp(-np.sqrt(1.125/np.exp((-0.125)))*x) + np.cos(0.125)/np.exp(-0.125)
+            # else:
+            #     return c3*np.exp(np.sqrt(np.exp(-(0.125**2)))*x) + c4*np.exp(-np.sqrt(np.exp(-(0.125**2)))*x) +1/(np.exp(-(0.125**2)))
             if x < ksi:
-                return c1*np.exp((np.sqrt(np.pi*4+1)) * x) + c2*np.exp(-((np.sqrt(np.pi*4+1)) * x)) + 4/(np.pi+4) 
+                return c1*np.exp(np.sqrt(np.pi/4+1)*x) + c2*np.exp(-np.sqrt(np.pi/4+1)*x) + 1/(np.pi/4 + 1)
             else:
-                return c3*np.exp(np.pi/4*x) + c4*np.exp(-np.pi/4*x) + 4*np.sqrt(2)/np.pi**2
-
-        h = 1/n
+                return c3*np.exp(np.pi*x/4) + c4 * np.exp(-np.pi*x/4) + 4*np.sqrt(2)/(np.pi*np.pi)
+    
+        h = float64(1/n)
         v = np.zeros(n+1)
         u = np.zeros(n+1)
         d = np.zeros(n+1)
         d[0] = 1
         for i in range(1, n):
-            d[i] = -f(i*h)
+            d[i] = f(i*h)
         d[n] = 0
 
         C = np.zeros(n-1)
         A = np.zeros(n-1)
         B = np.zeros(n-1)
         for i in range(1, n): #последний индекс - n-1
-            xi = (i)*h
-            xi1 = (i+1)*h
+            xi =float64((i)*h)
+            xi1 = float64((i+1)*h)
             A[i-1] = a_func(xi)/h**2
             C[i-1] = (a_func(xi)/(h**2)+d_func(xi)+a_func(xi1)/(h**2))
             B[i-1] = a_func(xi1)/h**2
 
-
+        
+        
         v = TDMASolve(A, C, B, d)
+        # v = TDMASolve(A, C, B, d)
+        # syst = np.zeros((n+1, n+1))
+        # syst[0][0] = 1
+        # syst[n][n] = 1
+        # for i in range(1, n):
+        #     xi =float64((i)*h)
+        #     xi1 = float64((i+1)*h)
+        #     syst[i][i-1] = a_func(xi)/h**2
+        #     syst[i][i] = -(a_func(xi)/(h**2)+d_func(xi)+a_func(xi1)/(h**2))
+        #     syst[i][i+1] = a_func(xi1)/h**2
+
+        # v = np.linalg.solve(syst, d)
+
+        u = [float64(acc_sol(float64(i*h))) for i in range(0, n+1)]
+        y = u-v
+
+        self.tableWidget.setRowCount(n+1)
+        for i in range(0, n+1):
+            self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(str(i)))
+            self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(str(i*h)))
+            self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(str(u[i])))
+            self.tableWidget.setItem(i, 3, QtWidgets.QTableWidgetItem(str(v[i])))
+            self.tableWidget.setItem(i, 5, QtWidgets.QTableWidgetItem(str(u[i] - v[i])))
+        self.label_2.setText(QtCore.QCoreApplication.translate("MainWindow", 
+                    "Результаты расчета: \n Для решения тестовой задачи \n использована" 
+                    + " сетка с числом разбиений по x: \n n = " + str(n) + 
+                    "\n Максимальное отклонение точного и приближенного \n"+ 
+                    "решений наблюдается в точке x=" + str(np.argmax(abs(y))) + ", значение которой равно:"
+                    + str(max(abs(y)))))
+
         
-        pi = np.pi
-        sqrt = np.sqrt
-        exp = np.exp
-
-        syst = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
-        b = [0, 0, 0, 0]
-        syst[0][0] = 1
-        syst[0][1] = 1
-        b[0] = 1-4/(pi+4)
-
-        syst[1][2] = exp(pi/4)
-        syst[1][3] = exp(-pi/4)
-        b[1] = -4*sqrt(2)/(pi**2)
-
-        syst[2][0] = exp(sqrt(pi/4 + 1)*(pi/4))
-        syst[2][1] = exp(-sqrt(pi/4 + 1)*(pi/4)) 
-        syst[2][2] = -exp((pi**2)/16)
-        syst[2][3] = -exp(-(pi**2)/16)
-        b[2] = 4*sqrt(2)/(pi**2) - 4/(pi+4)  
-
-        syst[3][0] = sqrt(pi/4 + 1)*exp(sqrt(pi/4 + 1)*(pi/4))
-        syst[3][0] = -sqrt(pi/4 + 1) * exp(-sqrt(pi/4 + 1)*(pi/4))
-        syst[3][2] = -exp((pi**2)/16)*pi/2
-        syst[2][2] = exp(-(pi**2)/16)*pi/2
-
-        
-
-        y = np.linalg.solve(syst, b)
-        print (y)
-        # c = [-0.15717387  0.59707472  0.00681621 -0.8470241 ]
-        u = [acc_sol(i*h) for i in range(0, n+1)]
 
         plt.subplot(111)
         plt.plot(u)
-        #
         plt.ylabel("Температура")
         plt.plot(v)
-        #plt.plot(u-v)
-        plt.legend(("Точное решение", "Численное решение"))
+        plt.plot(y)
+        plt.legend(("Точное решение", "Численное решение прогонкой", "Разность точного и численного"))
         plt.show()
 
         
