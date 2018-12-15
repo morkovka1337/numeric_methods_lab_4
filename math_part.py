@@ -188,6 +188,7 @@ class mathpart(Ui_MainWindow):
                 x[i] = alpha[i] * x[i+1] + beta[i]
             x[0] = alpha[0] * x[1] + beta[0]
             return x
+
         def a_func(x):
             nonlocal h
             if x <= ksi:
@@ -202,7 +203,7 @@ class mathpart(Ui_MainWindow):
             if x+h/2 <= ksi:
                 return x + 1
             elif x-h/2 < ksi and x+h/2 > ksi:
-                return ((ksi-x+h/2)*((ksi+x-h/2)/2+1) + (x-h/2-ksi)*((x+h/2-ksi)/2)**2)/h
+                return ((ksi-x+h/2)*((ksi+x-h/2)/2+1) + (x+h/2-ksi)*((x+h/2+ksi)/2)**2)/h
             elif x-h/2 >= ksi:
                 return x**2/2
             
@@ -211,7 +212,7 @@ class mathpart(Ui_MainWindow):
             if x+h/2 <= ksi:
                 return np.sin(2*x)
             elif x-h/2 < ksi and x+h/2 > ksi:
-                return ((ksi-x+h/2)*np.sin(ksi-x+h/2) + (x+h/2-ksi)*(np.sin((x+h/2-ksi)/2)))/h
+                return ((ksi-x+h/2)*np.sin(ksi+x-h/2) + (x+h/2-ksi)*(np.sin((x+h/2+ksi)/2)))/h
             elif x-h/2 >= ksi:
                 return np.sin(x)
 
