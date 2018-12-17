@@ -176,7 +176,7 @@ class mathpart(Ui_MainWindow):
             n = len(d)-1
             alpha = np.zeros(n)
             beta = np.zeros(n)
-            x = np.zeros(n+1)
+            x = np.zeros(n+1, float64)
             alpha[0] = 0 # alpha[0] = kapa1, kapa1 в этой задаче всегда 0
             beta[0] = d[0] # beta[0] = mu[1]
             for i in range(0, n-1):
@@ -193,63 +193,86 @@ class mathpart(Ui_MainWindow):
             nonlocal h
             if x <= ksi:
                 return np.sqrt(2) * np.cos(x-h/2)
+           
+            elif x-h < ksi and x > ksi:
+                # left_mean = (ksi+x-h)/2
+                # left_int = (ksi-(x-h))/(np.sqrt(2)*np.cos(left_mean))
+                # # right_mean = (x+ksi)/2
+                # right_int = (x-ksi)/2
+                # full_int = left_int + right_int
+                return h / ((ksi - (x - h)) / (np.sqrt(2) * np.cos((x - h + ksi)/2)) +
+                     (x - ksi) / 2) 
+            
             elif x-h >= ksi:
                 return 2
-            elif x-h<ksi and x > ksi:
-                return h/((ksi-x+h)/(np.sqrt(2)*np.cos((ksi+x-h)/2)) + (x-ksi)/2)
 
         def d_func(x):
             nonlocal h
             if x+h/2 <= ksi:
-                return x + 1
+                return x + 1 
+
             elif x-h/2 < ksi and x+h/2 > ksi:
-                return ((ksi-x+h/2)*((ksi+x-h/2)/2+1) + (x+h/2-ksi)*((x+h/2+ksi)/2)**2)/h
-            elif x-h/2 >= ksi:
-                return x**2/2
+                # left_mean = (ksi+(x-h/2))/2
+                # left_int = (ksi-(x-h/2))*(left_mean+1)
+                # right_mean = (x+h/2+ksi)/2
+                # right_int = (x+h/2-ksi) * 2*right_mean**2
+                # return (left_int + right_int)/h
+                return ((ksi - (x - h / 2)) * ((x + h / 2 - ksi)/2 + 1) +
+                     (x + h / 2 - ksi) * (2*((x + h / 2 - ksi)/2**2))) / h   
             
+            elif (x-h/2) >= ksi:
+                return (x**2)*2        
         def f(x):
             nonlocal h
             if x+h/2 <= ksi:
                 return np.sin(2*x)
             elif x-h/2 < ksi and x+h/2 > ksi:
-                return ((ksi-x+h/2)*np.sin(ksi+x-h/2) + (x+h/2-ksi)*(np.sin((x+h/2+ksi)/2)))/h
+                # left_mean = (ksi+(x-h/2))/2
+                # left_int = (ksi-(x-h/2)) * np.sin(2*left_mean)
+                # right_mean = (x+h/2+ksi)/2
+                # right_int = (x+h/2-ksi)*np.sin(right_mean)
+                # return (left_int + right_int)/h
+                return ((ksi - (x - h / 2)) * (np.sin(2*(x + h / 2 - ksi)/2)) + 
+                        (x + h / 2 - ksi) * (np.sin((x + h / 2 - ksi)/2))) / h
+
             elif x-h/2 >= ksi:
                 return np.sin(x)
+            
 
         h = float64(1/n)
-        v = np.zeros(n+1)
-        d = np.zeros(n+1)
+        v = np.zeros(n+1, float64)
+        d = np.zeros(n+1, float64)
         d[0] = 1
         for i in range(1, n):
             d[i] = f(i*h)
         d[n] = 0
 
-        C = np.zeros(n-1)
-        A = np.zeros(n-1)
-        B = np.zeros(n-1)
+        C = np.zeros(n-1, float64)
+        A = np.zeros(n-1, float64)
+        B = np.zeros(n-1, float64)
         for i in range(1, n): #последний индекс - n-1
             xi =float64((i)*h)
             xi1 = float64((i+1)*h)
-            A[i-1] = a_func(xi)/h**2
-            C[i-1] = (a_func(xi)/(h**2)+d_func(xi)+a_func(xi1)/(h**2))
-            B[i-1] = a_func(xi1)/h**2
+            A[i-1] = a_func(xi)/(h**2)
+            C[i-1] = (a_func(xi)+a_func(xi1))/(h**2)+d_func(xi)
+            B[i-1] = a_func(xi1)/(h**2)
 
         v = TDMASolve(A, C, B, d)
 
         n_new = n* 2
         h = float64(1/n_new)
-        d = np.zeros(n_new+1)
+        d = np.zeros(n_new+1, float64)
         d[0] = 1
         for i in range(1, n_new):
             d[i] = f(i*h)
         d[n_new] = 0
 
-        C = np.zeros(n_new-1)
-        A = np.zeros(n_new-1)
-        B = np.zeros(n_new-1)
+        C = np.zeros(n_new-1, float64)
+        A = np.zeros(n_new-1, float64)
+        B = np.zeros(n_new-1, float64)
         for i in range(1, n_new): #последний индекс - n-1
-            xi =float64((i)*h)
-            xi1 = float64((i+1)*h)
+            xi =float64((i-1)*h)
+            xi1 = float64((i)*h)
             A[i-1] = a_func(xi)/h**2
             C[i-1] = (a_func(xi)/(h**2)+d_func(xi)+a_func(xi1)/(h**2))
             B[i-1] = a_func(xi1)/h**2
