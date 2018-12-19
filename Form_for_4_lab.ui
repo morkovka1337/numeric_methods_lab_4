@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1235</width>
-    <height>720</height>
+    <width>1003</width>
+    <height>508</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -63,10 +63,10 @@
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>460</y>
-      <width>1201</width>
-      <height>191</height>
+      <x>280</x>
+      <y>20</y>
+      <width>711</width>
+      <height>441</height>
      </rect>
     </property>
     <column>
@@ -122,26 +122,13 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>20</y>
-      <width>581</width>
-      <height>161</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Результаты расчета:</string>
-    </property>
-   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1235</width>
+     <width>1003</width>
      <height>21</height>
     </rect>
    </property>
