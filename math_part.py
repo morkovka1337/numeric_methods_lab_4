@@ -13,6 +13,22 @@ import matplotlib.pyplot as plt
 class mathpart(Ui_MainWindow):
 
     def build_test_1(self, n):
+        def TDMASolve(a, c, b, d):
+            n = len(d)-1
+            alpha = np.zeros(n)
+            beta = np.zeros(n)
+            x = np.zeros(n+1)
+            alpha[0] = 0 # alpha[0] = kapa1, kapa1 в этой задаче всегда 0
+            beta[0] = d[0] # beta[0] = mu[1]
+            for i in range(0, n-1):
+                alpha[i+1] = b[i]/(c[i]-alpha[i]*a[i])
+                beta[i+1] = (d[i+1] + beta[i] * a[i])/(c[i] - alpha[i] * a[i])
+
+            x[-1] = d[-1]
+            for i in range (n-1, 0, -1):
+                x[i] = alpha[i] * x[i+1] + beta[i]
+            x[0] = alpha[0] * x[1] + beta[0]
+            return x
 
         def acc_sol(x):
             return 2*x**2 + 5*x + 7
@@ -23,21 +39,22 @@ class mathpart(Ui_MainWindow):
         
         
         b = np.zeros(n+1)
-        syst = np.zeros((n+1, n+1))
+        #syst = np.zeros((n+1, n+1))
+        C = np.zeros(n-1)
+        A = np.zeros(n-1)
+        B = np.zeros(n-1)
+        for i in range(1, n): #последний индекс - n-1
+            A[i-1] = 2/(h**2)
+            C[i-1] = (4/(h**2) + 2)
+            B[i-1] = 2/(h**2)
         b[0] = 7
         for i in range(1, n):
-            b[i] = -4*((i*h)**2) - 10*i*h - 6 
+            b[i] = 4*((i*h)**2) + 10*i*h + 6 
         b[n] = 14
 
-        for i in range(1, n):
-            syst[i][i-1] = 2/(h**2)
-            syst[i][i] = -(4/(h**2) + 2)
-            syst[i][i+1] = 2/(h**2)
-        
-        syst[0][0] = 1
-        syst[n][n] = 1
 
-        v = np.linalg.solve(syst, b)
+
+        v = TDMASolve(A, C, B, b)
 
         
         self.tableWidget.setRowCount(n+1)
@@ -51,15 +68,18 @@ class mathpart(Ui_MainWindow):
                     "Результаты расчета: \n Для решения тестовой задачи \n использована" 
                     + " сетка с числом разбиений по x: \n n = " + str(n) + 
                     "\n Максимальное отклонение точного и приближенного \n"+ 
-                    "решений наблюдается в точке x=" + str(np.argmax(abs(u-v))) + ", значение которой равно:"
+                    "решений наблюдается в точке x=" + str(np.argmax(abs(u-v))*h) + ", значение которой равно:"
                     + str(max(abs(u-v)))))
 
         plt.subplot(111)
         plt.plot(u)
         plt.ylabel("Температура")
         plt.plot(v)
-        plt.plot(u-v)
-        plt.legend(("Точное решение", "Численное решение", "Разность точного и численного"))
+        plt.legend(("Точное решение", "Численное решение прогонкой"))
+        plt.show()
+        plt.subplot(111)
+        plt.plot(abs(u-v))
+        plt.legend(("Разность точного и численного"))
         plt.show()
 
     def build_test_2(self, n):
@@ -159,15 +179,18 @@ class mathpart(Ui_MainWindow):
                     "Результаты расчета: \n Для решения тестовой задачи \n использована" 
                     + " сетка с числом разбиений по x: \n n = " + str(n) + 
                     "\n Максимальное отклонение точного и приближенного \n"+ 
-                    "решений наблюдается в точке x=" + str(np.argmax(abs(y))) + ", значение которой равно:"
+                    "решений наблюдается в точке x=" + str(np.argmax(abs(y))*h) + ", значение которой равно:"
                     + str(max(abs(y)))))
 
         plt.subplot(111)
         plt.plot(u)
         plt.ylabel("Температура")
         plt.plot(v)
-        plt.plot(y)
-        plt.legend(("Точное решение", "Численное решение прогонкой", "Разность точного и численного"))
+        plt.legend(("Точное решение", "Численное решение прогонкой"))
+        plt.show()
+        plt.subplot(111)
+        plt.plot(abs(y))
+        plt.legend(("Разность точного и численного"))
         plt.show()
 
     def build_test_3(self, n):
@@ -281,6 +304,7 @@ class mathpart(Ui_MainWindow):
         
         v2 = v2[::2]
         y = v2-v
+        h *= 2
         self.tableWidget.setRowCount(n+1)
         for i in range(0, n+1):
             self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(str(i)))
@@ -292,13 +316,16 @@ class mathpart(Ui_MainWindow):
                     "Результаты расчета: \n Для решения тестовой задачи \n использована" 
                     + " сетка с числом разбиений по x: \n n = " + str(n) + 
                     "\n Максимальное отклонение численного с двойным шагом и численного \n"+ 
-                    "решений наблюдается в точке x=" + str(np.argmax(abs(y))) + ", значение которой равно:"
+                    "решений наблюдается в точке x=" + str(np.argmax(abs(y))*h) + ", значение которой равно:"
                     + str(max(abs(y)))))
 
         plt.subplot(111)
         plt.plot(v2)
         plt.ylabel("Температура")
         plt.plot(v)
-        plt.plot(y)
-        plt.legend(("Точное решение", "Численное решение прогонкой", "Разность точного и численного"))
+        plt.legend(("Численное с половинным шагом", "Численное решение"))
+        plt.show()
+        plt.subplot(111)
+        plt.plot(abs(y))
+        plt.legend(("Разность точного и численного"))
         plt.show()
