@@ -22,6 +22,7 @@ class Ui_MainWindow(object):
         self.comboBox.setObjectName("comboBox")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
+        self.comboBox.addItem("Основная задача")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(20, 150, 251, 31))
         self.pushButton.setObjectName("pushButton")
@@ -66,8 +67,8 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label.setText(_translate("MainWindow", "Число разбиений по x"))
-        self.comboBox.setItemText(0, _translate("MainWindow", "Тестовая и основная 1"))
-        self.comboBox.setItemText(1, _translate("MainWindow", "Тестовая и основная 2"))
+        self.comboBox.setItemText(0, _translate("MainWindow", "Тестовая задача 1"))
+        self.comboBox.setItemText(1, _translate("MainWindow", "Тестовая задача 2"))
         self.pushButton.setText(_translate("MainWindow", "Решить"))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "№ узла"))
